@@ -25,8 +25,8 @@ import asa from "../asa.js";
 import axios from "axios";
 
 // uncomment these lines once you've copied the checkpoint files over
-// import fungibleConfig from "../artifacts/0-deploy-tokens.js.cp.yaml"; //fungible token
-// import nftConfig from "../artifacts/2-deploy-nft.js.cp.yaml"; //nft
+import fungibleConfig from "../artifacts/0-deploy-tokens.js.cp.yaml"; //fungible token
+import nftConfig from "../artifacts/2-deploy-nft.js.cp.yaml"; //nft
 
 export default {
     props: {
@@ -39,8 +39,8 @@ export default {
             acsTxId: "",
             amount_acs: 1,
             explorerURL: "",
+            fungibleTokenId: fungibleConfig.default.asa.acsCoinASA.assetIndex,
             nfts: [],
-            fungibleTokenId: "",
             creator: process.env.VUE_APP_CREATOR_ADDR,
         };
     },
@@ -54,7 +54,7 @@ export default {
                 this.creator, 
                 this.buyer, 
                 thisNFT.assetIndex, 
-                fungibleTokenId
+                fungibleConfig.default.asa.acsCoinASA.assetIndex
             );
         },
         setExplorerURL(txId) {
@@ -75,6 +75,37 @@ export default {
             // this function should update nfts in data() so that your nfts can be displayed in your dapp.
 
             // write your code here
+            const nftData = nftConfig.default.asa;
+            this.nfts = await Promise.all(nftData.map( async (nft) => {
+                // get json metadata file
+                const url = nft[1].assetDef.url.replace(
+                    "ipfs://",
+                    "https://gateway.pinata.cloud/ipfs/"
+                );
+                const response = await axios.get(url);
+                const jsonMetadata = response.data;
+                // get image url
+                const imgUrl = jsonMetadata.image.replace(
+                    "ipfs://",
+                    "https://gateway.pinata.cloud/ipfs/"
+                );
+                // check metadata
+                const validHash = asa.checkMetadataHash(
+                    nft[1].assetDef.metadataHash,
+                    nft[1].assetDef.url
+                );
+                
+                return {
+                    name: nft[0],
+                    ...nft[1].assetDef,
+                    assetIndex: nft[1].assetIndex,
+                    creator: nft[1].creator,
+                    txId: nft[1].txId,
+                    jsonMetadata,
+                    imgUrl,
+                    validHash
+                }
+            }));
         },
     },
     async mounted() {

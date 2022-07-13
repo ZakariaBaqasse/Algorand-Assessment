@@ -4,13 +4,75 @@ import { getAlgodClient } from "./client.js";
 import wallets from "./wallets.js";
 import { convertByte32ToIpfsCidV0 } from "../scripts/helpers/ipfs2bytes32.js";
 
-const purchaseNFT = async (creator, receiver, nftId, fungibleTokenId) => {
+
+const purchaseNFT = async(creator, receiver, nftId, fungibleTokenId) => {
     // create transactions here before calling sendAlgoSignerTransaction from wallet.js
-    
-    // write your code here
+
+    const algodClient = getAlgodClient('Localhost');
+    const suggestedParams = algodClient.getTransactionParams().do();
+    let transferTokenTxn = optInTxn = transferNftTxn = '';
+    try {
+
+        transferTokenTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+            receiver,
+            creator,
+            undefined,
+            undefined,
+            5,
+            undefined,
+            fungibleTokenId,
+            suggestedParams
+        );
+    } catch (err) { console.log(`err1: ${err.message}`) };
+    try {
+
+        optInTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+            receiver,
+            receiver,
+            undefined,
+            undefined,
+            0,
+            undefined,
+            nftId,
+            suggestedParams
+        );
+    } catch (err) {
+        console.log(`err2: ${err.message}`);
+    }
+
+    try {
+
+        transferNftTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(
+            creator,
+            receiver,
+            undefined,
+            undefined,
+            1,
+            undefined,
+            nftId,
+            suggestedParams
+        );
+    } catch (err) {
+        console.log(`err3: ${err.message}`);
+    }
+
+    try {
+
+        let txns = [transferTokenTxn, optInTxn, transferNftTxn];
+        let txnGroup = algosdk.assignGroupID(txns);
+        return await wallets.sendAlgoSignerTransaction(txnGroup);
+    } catch (err) {
+        console.log(`err4: ${err.message}`);
+    }
+
+
+
+
+
+
 }
 
-const getAccountInfo = async (address, network) => {
+const getAccountInfo = async(address, network) => {
     const algodClient = getAlgodClient(network);
 
     return await algodClient.accountInformation(address).do();

@@ -1,11 +1,11 @@
-# acsCoinASA:
-#   total: 1000000
-#   decimals: 0
-#   defaultFrozen: false
-#   unitName: "ACS"
-#   url: "url"
-#   note: "acs coin"
-#   manager: ""
-#   reserve: ""
-#   freeze: ""
-#   clawback: ""
+acsCoinASA:
+  total: 1000000
+  decimals: 0
+  defaultFrozen: false
+  unitName: "ACS"
+  url: "url"
+  note: "acs coin"
+  manager: "WMDPHOHIRQ7FQRXNXHUI5CDHEFIELJ5OWCBMA4PONHDMPATVLWPSXVXOEQ"
+  reserve: "WMDPHOHIRQ7FQRXNXHUI5CDHEFIELJ5OWCBMA4PONHDMPATVLWPSXVXOEQ"
+  freeze: "WMDPHOHIRQ7FQRXNXHUI5CDHEFIELJ5OWCBMA4PONHDMPATVLWPSXVXOEQ"
+  clawback: "WMDPHOHIRQ7FQRXNXHUI5CDHEFIELJ5OWCBMA4PONHDMPATVLWPSXVXOEQ"
